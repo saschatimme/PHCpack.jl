@@ -10,6 +10,7 @@ function phcpack(
     f::Vector{<: MP.AbstractPolynomialLike};
     file_path = mktempdir(),
     phcpack_path = "",
+    cmd_options = "-b",
     print_output = true)
 
     oldpath = pwd()
@@ -17,7 +18,7 @@ function phcpack(
     println("File path: $(file_path)")
 
     phcpack_input = String[]
-    push!(phcpack_input, "$(MP.nvariables(f))")
+    push!(phcpack_input, "$(length(f)) $(MP.nvariables(f))")
 
     for i in 1:length(f)
         monomials = MP.monomials(f[i])
@@ -60,7 +61,7 @@ function phcpack(
 
 
     writedlm("input", phcpack_input, '\n')
-    @time run(`$(phcpack_path)phc -b input output.phc`)
+    @time run(`$(phcpack_path)phc $(cmd_options) input output.phc`)
     if print_output
         run(`cat output.phc`)
     end
