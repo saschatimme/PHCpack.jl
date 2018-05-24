@@ -63,7 +63,7 @@ function phcpack(
     writedlm("input", phcpack_input, '\n')
     @time run(`$(phcpack_path)phc $(cmd_options) input output.phc`)
     if print_output
-        run(`cat output.phc`)
+        run(`tail -40 output.phc`)
     end
     nothing
 end
