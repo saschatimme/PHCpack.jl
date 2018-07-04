@@ -1,4 +1,4 @@
-using PHCPack
+using PHCpack
 using Base.Test
 
 # write your own tests here

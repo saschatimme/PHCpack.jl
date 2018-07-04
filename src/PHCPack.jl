@@ -1,15 +1,15 @@
-module PHCPack
+module PHCpack
 
 using Base.Filesystem
 import MultivariatePolynomials
 const MP = MultivariatePolynomials
 
-export phcpack
+export phc
 
-function phcpack(
+function phc(
     f::Vector{<: MP.AbstractPolynomialLike};
     file_path = mktempdir(),
-    phcpack_path = "",
+    phc_path = "",
     cmd_options = "-b",
     print_output = true)
 
