@@ -1,13 +1,19 @@
 module PHCpack
 
-using Base.Filesystem
-import MultivariatePolynomials
-const MP = MultivariatePolynomials
-
 export phc
 
+import HomotopyContinuation
+using HomotopyContinuation: @var
+using HomotopyContinuation: @polyvar
+export @var
+export @polyvar
+const HC = HomotopyContinuation
+using DelimitedFiles
+
+
+
 function phc(
-    f::Vector{<: MP.AbstractPolynomialLike};
+    f::HC.System;
     file_path = mktempdir(),
     phc_path = "",
     cmd_options = "-b",
@@ -17,50 +23,20 @@ function phc(
     cd(file_path)
     println("File path: $(file_path)")
 
-    phcpack_input = String[]
-    push!(phcpack_input, "$(length(f)) $(MP.nvariables(f))")
+    input = String[]
+    push!(input, "$(HC.length(f)) $(HC.nvariables(f))")
+    n = length(f)
 
-    for i in 1:length(f)
-        monomials = MP.monomials(f[i])
-        fi_data = zip([MP.exponents(m) for m in monomials], [MP.variables(m) for m in monomials], MP.coefficients(f[i]))
-        fi = ""
-        t = first(fi_data)
-        if typeof(t[3]) <: Real
-            fi = string(fi, "+($(t[3]))")
-        else
-            fi = string(fi, "+(")
-            fi = string(fi, string(t[3])[1:end-2])
-            fi = string(fi, "*I)")
-        end
-        for j in 1:length(t[1])
-            if t[1][j] > 1
-                fi = string(fi, "*$(t[2][j]^t[1][j])")
-            elseif t[1][j] == 1
-                fi = string(fi, "*$(t[2][j])")
-            end
-        end
-        for t in Iterators.drop(fi_data, 1)
-            if typeof(t[3]) <: Real
-                fi = string(fi, "+($(t[3]))")
-            else
-                fi = string(fi, "+(")
-                fi = string(fi, string(t[3])[1:end-2])
-                fi = string(fi, "*I)")
-            end
-
-            for j in 1:length(t[1])
-                if t[1][j] > 1
-                    fi = string(fi, "*$(t[2][j]^t[1][j])")
-                elseif t[1][j] == 1
-                    fi = string(fi, "*$(t[2][j])")
-                end
-            end
-        end
-        push!(phcpack_input, " $fi;")
+    for (i, fi) in enumerate(f)
+      push!(input, "$(fi);")
     end
+    # replace exponentiation
+    input = map(line -> replace(line, "^" => "**"), input)
+    # replace complex numbers
+    input = map(line -> replace(line, r"(^|\W)(im)(\W|$)" => s"\1I\3"), input)
 
 
-    writedlm("input", phcpack_input, '\n')
+    writedlm("input", input, '\n')
     @time run(`$(phc_path)phc $(cmd_options) input output.phc`)
     if print_output
         run(`tail -40 output.phc`)
