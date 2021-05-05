@@ -8,7 +8,7 @@ x^2 - y + 1 = x + y + 4 = 0
 ```
 we type
 ```julia
-using PHCpack
+using PHCPack
 @var x y
 
 f = System([x^2 - y + 1 ; x + y + 4])
