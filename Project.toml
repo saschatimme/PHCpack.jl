@@ -1,6 +1,6 @@
 name = "PHCPack"
-uuid = "78847b12-ad79-11eb-2f13-bfc10916fd24"
-authors = ["Sascha Timme <sascha@timme.xyz>", "Paul Breiding <p.breiding@tu-berlin.de>"]
+uuid = "ced0eddd-41b0-4425-8498-915654d00941"
+authors = ["Sascha Timme <sascha@timme.xyz>", "Paul Breiding <pbrdng@gmail.com>"]
 version = "0.1.0"
 
 [deps]
